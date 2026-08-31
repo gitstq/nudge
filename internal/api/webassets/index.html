@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="dark light" />
+<title>nudge · notification inbox</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="style.css" />
+<meta name="theme-color" content="#0f172a" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img src="icon.svg" alt="" width="28" height="28" />
+    <span>nudge</span>
+    <em id="conn" class="conn" data-i18n="connecting">connecting…</em>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="inbox" class="active" data-i18n="tab_inbox">Inbox</button>
+    <button data-tab="devices" data-i18n="tab_devices">Devices</button>
+    <button data-tab="keys" data-i18n="tab_keys">Publish keys</button>
+    <button data-tab="channels" data-i18n="tab_channels">Channels</button>
+    <button data-tab="settings" data-i18n="tab_settings">Settings</button>
+  </nav>
+  <div class="top-actions">
+    <button id="lang-toggle" class="ghost" title="切换语言 / Language">中/EN</button>
+    <button id="logout" class="ghost" data-i18n="logout">Logout</button>
+  </div>
+</header>
+
+<main>
+  <!-- Login -->
+  <section id="login-view" class="card login">
+    <h1 data-i18n="login_title">Connect to your nudge server</h1>
+    <p class="muted" data-i18n="login_hint">Enter the admin token printed on first boot (stored in data/admin.token). It stays in this browser only.</p>
+    <input id="admin-token" type="password" placeholder="nudg_a_…" autocomplete="off" />
+    <button id="login-btn" class="primary" data-i18n="connect">Connect</button>
+    <p id="login-err" class="err"></p>
+  </section>
+
+  <!-- Inbox -->
+  <section id="tab-inbox" class="tabview">
+    <div class="toolbar">
+      <input id="filter-topic" placeholder="filter by topic" />
+      <select id="filter-level">
+        <option value="" data-i18n="all_levels">all levels</option>
+        <option value="info">info</option>
+        <option value="success">success</option>
+        <option value="warning">warning</option>
+        <option value="error">error</option>
+      </select>
+      <label class="chk"><input type="checkbox" id="filter-unread" /> <span data-i18n="unread_only">unread only</span></label>
+      <span class="spacer"></span>
+      <span id="unread-badge" class="badge">0 unread</span>
+      <button id="btn-read-all" class="ghost" data-i18n="mark_all_read">Mark all read</button>
+      <button id="btn-clear" class="danger ghost" data-i18n="clear_all">Clear all</button>
+    </div>
+    <div id="event-list" class="event-list"></div>
+    <p id="inbox-empty" class="empty hidden" data-i18n="inbox_empty">No notifications yet — send one with curl!</p>
+  </section>
+
+  <!-- Devices -->
+  <section id="tab-devices" class="tabview hidden">
+    <div class="card">
+      <h2 data-i18n="this_device">This device</h2>
+      <p class="muted" data-i18n="device_hint">Install this page as an app (Add to Home Screen / Install), then enable push. No native app and no APNs configuration required.</p>
+      <button id="btn-enroll" class="primary" data-i18n="enable_push">Enable push notifications</button>
+      <button id="btn-unenroll" class="ghost hidden" data-i18n="disable_push">Disable on this device</button>
+      <p id="enroll-msg" class="muted"></p>
+    </div>
+    <div class="card">
+      <h2 data-i18n="enrolled">Enrolled devices</h2>
+      <table class="grid">
+        <thead><tr><th>Name</th><th>Endpoint</th><th>Last status</th><th></th></tr></thead>
+        <tbody id="device-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Keys -->
+  <section id="tab-keys" class="tabview hidden">
+    <div class="card">
+      <h2 data-i18n="new_key">New publish key</h2>
+      <div class="row">
+        <input id="key-name" placeholder="name, e.g. backup-job" />
+        <input id="key-topic" placeholder="bound topic (optional)" />
+        <button id="btn-add-key" class="primary" data-i18n="create">Create</button>
+      </div>
+      <div id="key-result" class="token-box hidden">
+        <p data-i18n="token_once">This token is shown only once — copy it now:</p>
+        <code id="key-token"></code>
+        <button class="ghost" id="copy-key" data-i18n="copy">Copy</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2 data-i18n="existing_keys">Existing keys</h2>
+      <table class="grid">
+        <thead><tr><th>Name</th><th>Prefix</th><th>Topic</th><th>Created</th><th></th></tr></thead>
+        <tbody id="key-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Channels -->
+  <section id="tab-channels" class="tabview hidden">
+    <div class="card">
+      <h2 data-i18n="new_channel">New outbound channel</h2>
+      <div class="row">
+        <select id="ch-type">
+          <option value="discord">Discord webhook</option>
+          <option value="slack">Slack webhook</option>
+          <option value="telegram">Telegram (token|chatID)</option>
+          <option value="ntfy">ntfy server topic URL</option>
+          <option value="webhook">Generic JSON webhook</option>
+        </select>
+        <input id="ch-name" placeholder="channel name" />
+        <input id="ch-target" placeholder="webhook URL / token|chatID" />
+        <input id="ch-topics" placeholder="topics filter, comma separated (optional)" />
+        <button id="btn-add-ch" class="primary" data-i18n="create">Create</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2 data-i18n="existing_channels">Channels</h2>
+      <table class="grid">
+        <thead><tr><th>Name</th><th>Type</th><th>Target</th><th>Last result</th><th></th></tr></thead>
+        <tbody id="channel-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section id="tab-settings" class="tabview hidden">
+    <div class="card">
+      <h2 data-i18n="quick_start">Quick start</h2>
+      <p class="muted" data-i18n="curl_hint">Create a publish key in the previous tab, then:</p>
+      <pre id="curl-sample"></pre>
+      <h2>VAPID</h2>
+      <p class="muted">applicationServerKey:</p>
+      <code id="vapid-pub"></code>
+      <h2 data-i18n="stats">Stats</h2>
+      <pre id="stats-box">loading…</pre>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast hidden"></div>
+<script src="app.js"></script>
+</body>
+</html>
