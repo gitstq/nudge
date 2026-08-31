@@ -1,0 +1,22 @@
+# build artifacts
+/build/
+/dist/
+*.tar.gz
+*.zip
+nudge
+nudge.exe
+
+# runtime data
+/data/
+*.token
+vapid.json
+admin.token
+
+# test / editor cruft
+coverage.out
+*.test
+*.out
+.idea/
+.vscode/
+.DS_Store
+__pycache__/

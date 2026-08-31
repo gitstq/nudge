@@ -1,0 +1,9 @@
+.git
+build
+dist
+data
+*.tar.gz
+*.zip
+*.test
+.github
+tests/webpush_vector.json
