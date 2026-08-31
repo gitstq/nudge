@@ -16,6 +16,8 @@
 [![Platforms](https://img.shields.io/badge/platforms-linux%20%7C%20macos%20%7C%20windows-54968b?style=flat-square)](#-package--deploy)
 [![Zero deps](https://img.shields.io/badge/dependencies-zero-success?style=flat-square)](go.mod)
 
+### ⬇️ Download: **[Latest Release (v1.0.0)](https://github.com/gitstq/nudge/releases/latest)** — Linux · macOS · Windows, no runtime required
+
 </div>
 
 ---

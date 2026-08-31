@@ -16,6 +16,8 @@
 [![Platforms](https://img.shields.io/badge/%E5%B9%B3%E5%8F%B0-linux%20%7C%20macos%20%7C%20windows-54968b?style=flat-square)](#-打包與部署)
 [![Zero deps](https://img.shields.io/badge/%E9%9B%B6%E4%BE%9D%E8%B3%9D-zero-success?style=flat-square)](go.mod)
 
+### ⬇️ 下載：**[最新 Release（v1.0.0）](https://github.com/gitstq/nudge/releases/latest)** —— Linux · macOS · Windows，免執行階段
+
 </div>
 
 ---
